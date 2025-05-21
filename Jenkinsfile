@@ -47,14 +47,15 @@ pipeline {
         stage('Pruebas de aceptacion') {
             steps {
                 sh 'docker exec cargas_academicas_app python manage.py migrate'
-                sh """docker exec cargas_academicas_app bash -c "
+                sh """
+                    docker exec cargas_academicas_app bash -c "
                     python manage.py shell << END
                     from django.contrib.auth import get_user_model
                     User = get_user_model()
                     if not User.objects.filter(username='admin').exists():
                         User.objects.create_superuser('admin', 'admin@example.com', 'admin1234')
                     END"
-                    """
+                """
                 sh 'docker exec cargas_academicas_app bash -c "python manage.py runserver 0:8000 &"'
                 sh 'docker exec -w /pruebas_aceptacion cargas_academicas_app behave features/login.feature'
                 sh 'docker compose down -v'
