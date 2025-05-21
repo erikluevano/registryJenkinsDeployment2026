@@ -26,7 +26,8 @@ class ProgramaDeleteView(DeleteView):
             self.object.delete()
             messages.success(self.request, 'Se eliminó el programa académico')
         except ProgramaAcademico.DoesNotExist:
-            messages.error(self.request, 'No se pudo eliminar el programa académico')
+            messages.error(
+                self.request, 'No se pudo eliminar el programa académico')
         return redirect(success_url)
 
 

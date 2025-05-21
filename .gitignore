@@ -1,0 +1,14 @@
+# coverage report
+.coverage
+.coverage.*
+*.coverage
+*.cover
+*.py,cover
+
+
+
+htmlcov
+.DS_Store
+__pycache__/
+*.py[cod]
+*$py.class

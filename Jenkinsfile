@@ -4,6 +4,8 @@ pipeline {
         REGISTRY = 'registry.alex-mauricio.com.mx'
         IMAGE_NAME = 'cargas-academicas'
         VERSION = "v${BUILD_NUMBER}"
+        USER_SO = 'ubuntu'
+        DNS_PROD = 'ec2-44-245-216-17.us-west-2.compute.amazonaws.com'
     }
     stages {
         stage('Inicializando...') {
@@ -25,7 +27,7 @@ pipeline {
         stage('Pruebas unitarias') {
             steps {
                 timeout(time: 2, unit: 'MINUTES') {
-                    sleep time: 30, unit: 'SECONDS'
+                    sleep time: 10, unit: 'SECONDS'
                     sh 'docker exec cargas_academicas_app python3 manage.py test'
                     sh """docker exec cargas_academicas_app bash -c "coverage run --branch --source='.' --omit=*test*,*migrations*,*__init*,*settings*,*apps*,*wsgi*,*admin.py,*asgi.py,manage.py,*urls.py manage.py test" """
                     sh 'docker exec cargas_academicas_app coverage html'
@@ -84,8 +86,8 @@ pipeline {
     //         steps {
     //             sshagent(['prod-ssh-key']) {
     //                 sh """
-    //                     ssh -o StrictHostKeyChecking=no user@tu-servidor << 'EOF'
-    //                     cd /home/ubuntu/
+    //                     ssh -o StrictHostKeyChecking=no ${USER_SO}@${DNS_PROD} << 'EOF'
+    //                     cd /home/ubuntu/app
 
     //                     # Respaldar el valor anterior de IMAGE_VERSION
     //                     if grep -q '^IMAGE_VERSION=' .env; then

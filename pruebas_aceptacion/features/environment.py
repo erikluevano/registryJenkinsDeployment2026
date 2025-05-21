@@ -17,6 +17,7 @@ def before_scenario(context, scenario):
         options=chrome_options
     )
 
+
 def after_scenario(context, scenario):
     try:
         context.driver.quit()
