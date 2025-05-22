@@ -98,7 +98,7 @@ pipeline {
 
                         # Desplegar con la nueva imagen
                         docker compose up -d
-                        EOF
+EOF
                     """
                 }
             }
