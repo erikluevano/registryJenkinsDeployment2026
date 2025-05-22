@@ -110,18 +110,17 @@ EOF
             }
 
         }
-
-    //     stage('Revisión por QA') {
-    //         steps {
-    //             input "Desplegar en producción?"
-    //         }
-    //     }
-    //     stage('despliegue-pro') {
-    //         steps {
-    //             sh 'echo "Despliegue a producción"'
-    //             sh 'echo "Despliegue a producción"'
-    //         }
-    //     }
+        stage('Revisión por QA') {
+            steps {
+                input "Desplegar en producción?"
+            }
+        }
+        stage('despliegue-pro') {
+            steps {
+                sh 'echo "Despliegue a producción"'
+                sh 'echo "Despliegue a producción"'
+            }
+        }
     }
     post {
         always {
