@@ -34,5 +34,7 @@ ENV PATH="/env/bin:$PATH"
 RUN /env/bin/pip install --upgrade pip
 RUN /env/bin/pip install -r /app/requirements-prod.txt
 
+RUN python manage.py collectstatic --no-input
+
 
 CMD ["apachectl", "-D", "FOREGROUND"]

@@ -97,8 +97,7 @@ pipeline {
                         cat .env
 
                         # Desplegar con la nueva imagen
-                        docker-compose pull
-                        docker-compose up -d
+                        docker compose up -d
                         EOF
                     """
                 }
