@@ -98,6 +98,12 @@ pipeline {
 
                         # Desplegar con la nueva imagen
                         docker compose up -d
+
+                        # Ejecuta migraciones, tener cuidado en producción
+                        docker exec cargas_academicas_app python manage.py migrate
+
+                        # Crea super usuario
+                        docker exec cargas_academicas_app python create_superuser.py
 EOF
                     """
                 }
