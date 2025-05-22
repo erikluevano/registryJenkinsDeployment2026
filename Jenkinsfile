@@ -100,10 +100,10 @@ pipeline {
                         docker compose up -d
 
                         # Ejecuta migraciones, tener cuidado en producción
-                        docker exec cargas_academicas_app python manage.py migrate
+                        # docker exec cargas_academicas_app python manage.py migrate
 
                         # Crea super usuario
-                        docker exec cargas_academicas_app python create_superuser.py
+                        # docker exec cargas_academicas_app python create_superuser.py
 EOF
                     """
                 }
@@ -125,7 +125,8 @@ EOF
     }
     post {
         always {
-                sh 'docker compose down -v'
+            //cleanWs()
+            sh 'docker compose down -v'
         }
         success {
             echo "Despliegue completado exitosamente con versión ${VERSION}"
