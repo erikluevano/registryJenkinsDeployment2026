@@ -16,6 +16,7 @@ def before_scenario(context, scenario):
         command_executor='http://selenium-hub:4444/wd/hub',
         options=chrome_options
     )
+    # context.driver = webdriver.Chrome()
 
 
 def after_scenario(context, scenario):

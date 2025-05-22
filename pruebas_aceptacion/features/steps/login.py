@@ -1,6 +1,8 @@
+from time import sleep
 from behave import when, given, then
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+
 
 @given(u'que ingreso a la url: "{url}"')
 def step_impl(context, url):
@@ -15,19 +17,20 @@ def step_impl(context, username, password):
 
 @when(u'presiono el botón Identificarse')
 def step_impl(context):
-    xpath = '//*[@id="login-form"]/div[3]/input'
-    context.driver.find_element(By.XPATH, xpath).click()
+    context.driver.find_element(By.ID, 'btnIngresar').click()
 
 @then(u'puedo ver el mensaje "{mensaje}"')
 def step_impl(context, mensaje):
+    sleep(1)
     div_mensaje = context.driver.find_element(By.ID, 'bienvenida')
     assert mensaje in div_mensaje.text, \
         f"El mensaje {mensaje} no se encuentra en {div_mensaje.text}"
-    
+
 
 @then(u'puedo ver el mensaje de error "{mensaje}"')
 def step_impl(context, mensaje):
-    div_mensaje = context.driver.find_element(By.CLASS_NAME, 'errornote')
+    sleep(1)
+    div_mensaje = context.driver.find_element(By.ID, 'divError')
     assert mensaje in div_mensaje.text, \
         f"El mensaje {mensaje} no se encuentra en {div_mensaje.text}"
 
