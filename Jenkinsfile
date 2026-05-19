@@ -71,24 +71,19 @@ pipeline {
             steps {
                 sshagent(['prod-ssh-key']) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${USER_PROD}@${SERVER_PROD} << 'EOF'
-                        cd /home/admin/cargas_academicas
-
-                        if grep -q '^IMAGE_VERSION=' .env; then
-                            OLD_VERSION=\$(grep '^IMAGE_VERSION=' .env | cut -d '=' -f2)
-                            sed -i '/^IMAGE_VERSION_OLD=/d' .env
+                        ssh -o StrictHostKeyChecking=no -tt ${USER_PROD}@${SERVER_PROD} '
+                        cd /home/admin/cargas_academicas &&
+                        if grep -q "^IMAGE_VERSION=" .env; then
+                            OLD_VERSION=\$(grep "^IMAGE_VERSION=" .env | cut -d "=" -f2)
+                            sed -i "/^IMAGE_VERSION_OLD=/d" .env
                             echo "IMAGE_VERSION_OLD=\$OLD_VERSION" >> .env
-                        fi
-
-                        sed -i '/^IMAGE_VERSION=/d' .env
-                        echo "IMAGE_VERSION=${VERSION}" >> .env
-
-                        echo "Contenido actualizado de .env:"
-                        cat .env
-
-                        docker compose down
+                        fi &&
+                        sed -i "/^IMAGE_VERSION=/d" .env &&
+                        echo "IMAGE_VERSION=${VERSION}" >> .env &&
+                        cat .env &&
+                        docker compose down &&
                         docker compose up -d
-EOF
+                        '
                     """
                 }
             }
