@@ -1,12 +1,11 @@
 pipeline {
     agent any
     environment {
-        // ACTUALIZADO: Tu nuevo dominio del registry
         REGISTRY = 'registry.humo.solutions'
         IMAGE_NAME = 'cargas-academicas'
         VERSION = "v${BUILD_NUMBER}"
-        USER_PROD = 'ubuntu'
-        SERVER_PROD = 'ec2-35-90-52-186.us-west-2.compute.amazonaws.com'
+        USER_PROD = 'admin'
+        SERVER_PROD = 'ec2-18-222-144-236.us-east-2.compute.amazonaws.com'
     }
     stages {
         stage('Inicializando...') {
@@ -61,7 +60,6 @@ pipeline {
         }
         stage('Push de imagen a registry') {
             steps {
-                // Requiere credenciales de Jenkins llamadas 'docker-hub-creds'
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh """
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin ${REGISTRY}
@@ -72,11 +70,10 @@ pipeline {
         }
         stage('Desplegar en staging') {
             steps {
-                // Requiere llave SSH en Jenkins llamada 'prod-ssh-key'
                 sshagent(['prod-ssh-key']) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${USER_PROD}@${SERVER_PROD} << 'EOF'
-                        cd /home/ubuntu/cargas_academicas
+                        cd /home/admin/cargas_academicas
 
                         if grep -q '^IMAGE_VERSION=' .env; then
                             OLD_VERSION=\$(grep '^IMAGE_VERSION=' .env | cut -d '=' -f2)
