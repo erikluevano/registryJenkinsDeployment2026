@@ -1,7 +1,8 @@
 pipeline {
     agent any
     environment {
-        REGISTRY = 'registry.alex-mauricio.com.mx'
+        // ACTUALIZADO: Tu nuevo dominio del registry
+        REGISTRY = 'registry.humo.solutions'
         IMAGE_NAME = 'cargas-academicas'
         VERSION = "v${BUILD_NUMBER}"
         USER_PROD = 'ubuntu'
@@ -16,7 +17,6 @@ pipeline {
         stage('Entorno de desarrollo') {
             steps {
                 sh 'docker compose up -d --build'
-                //sh 'chmod +x script_jenkins.sh'
             }
         }
         stage('Analisis de codigo') {
@@ -45,11 +45,9 @@ pipeline {
                 }
             }
         }
-
         stage('Pruebas de aceptacion') {
             steps {
                 sh 'docker exec cargas_academicas_app python manage.py migrate'
-                // sh 'docker exec cargas_academicas_app python manage.py shell < create_superuser.py'
                 sh 'docker exec cargas_academicas_app python create_superuser.py'
                 sh 'docker exec cargas_academicas_app bash -c "python manage.py runserver 0:8000 &"'
                 sh 'docker exec -w /pruebas_aceptacion cargas_academicas_app behave features/login.feature'
@@ -57,15 +55,13 @@ pipeline {
         }
         stage('Construir imagen producción') {
             steps {
-                // sh 'cp /var/lib/jenkins/.env .'
-                // sh 'cp /var/lib/jenkins/settings.py .'
                 sh "docker build -t ${REGISTRY}/${IMAGE_NAME}:${VERSION} -f Dockerfile-prod ."
                 sh "docker tag ${REGISTRY}/${IMAGE_NAME}:${VERSION} ${REGISTRY}/${IMAGE_NAME}:latest"
-                // sh 'rm -rf .env settings.py'
             }
         }
         stage('Push de imagen a registry') {
             steps {
+                // Requiere credenciales de Jenkins llamadas 'docker-hub-creds'
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh """
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin ${REGISTRY}
@@ -76,39 +72,29 @@ pipeline {
         }
         stage('Desplegar en staging') {
             steps {
+                // Requiere llave SSH en Jenkins llamada 'prod-ssh-key'
                 sshagent(['prod-ssh-key']) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${USER_PROD}@${SERVER_PROD} << 'EOF'
                         cd /home/ubuntu/cargas_academicas
 
-                        # Respaldar el valor anterior de IMAGE_VERSION
                         if grep -q '^IMAGE_VERSION=' .env; then
                             OLD_VERSION=\$(grep '^IMAGE_VERSION=' .env | cut -d '=' -f2)
                             sed -i '/^IMAGE_VERSION_OLD=/d' .env
                             echo "IMAGE_VERSION_OLD=\$OLD_VERSION" >> .env
                         fi
 
-                        # Actualizar o agregar IMAGE_VERSION con la nueva versión
                         sed -i '/^IMAGE_VERSION=/d' .env
                         echo "IMAGE_VERSION=${VERSION}" >> .env
 
-                        # Confirmar contenido del archivo
                         echo "Contenido actualizado de .env:"
                         cat .env
 
-                        # Desplegar con la nueva imagen
                         docker compose up -d
-
-                        # Ejecuta migraciones, tener cuidado en producción
-                        # docker exec cargas_academicas_app python manage.py migrate
-
-                        # Crea super usuario
-                        # docker exec cargas_academicas_app python create_superuser.py
 EOF
                     """
                 }
             }
-
         }
         stage('Revisión por QA') {
             steps {
@@ -118,13 +104,11 @@ EOF
         stage('despliegue-pro') {
             steps {
                 sh 'echo "Despliegue a producción"'
-                sh 'echo "Despliegue a producción"'
             }
         }
     }
     post {
         always {
-            //cleanWs()
             sh 'docker compose down -v'
         }
         success {
@@ -134,6 +118,4 @@ EOF
             echo "El pipeline falló en algún paso."
         }
     }
-
 }
-chuckNorris()
