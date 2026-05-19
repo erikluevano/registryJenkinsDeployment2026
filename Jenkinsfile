@@ -31,7 +31,6 @@ pipeline {
                     sh """docker exec cargas_academicas_app bash -c "coverage run --branch --source='.' --omit=*test*,*migrations*,*__init*,*settings*,*apps*,*wsgi*,*admin.py,*asgi.py,manage.py,*urls.py manage.py test" """
                     sh 'docker exec cargas_academicas_app coverage html'
                     sh 'docker cp cargas_academicas_app:/app/htmlcov .'
-
                     publishHTML target:[
                         allowMissing: false,
                         alwaysLinkToLastBuild: false,
@@ -87,6 +86,7 @@ pipeline {
                         echo "Contenido actualizado de .env:"
                         cat .env
 
+                        docker compose down
                         docker compose up -d
 EOF
                     """
