@@ -15,6 +15,7 @@ pipeline {
         }
         stage('Entorno de desarrollo') {
             steps {
+                sh 'docker compose down -v --remove-orphans'
                 sh 'docker compose up -d --build'
             }
         }
@@ -101,7 +102,7 @@ pipeline {
     }
     post {
         always {
-            sh 'docker compose down -v'
+            sh 'docker compose down -v --remove-orphans'
         }
         success {
             echo "Despliegue completado exitosamente con versión ${VERSION}"
