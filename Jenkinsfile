@@ -5,7 +5,7 @@ pipeline {
         IMAGE_NAME = 'cargas-academicas'
         VERSION = "v${BUILD_NUMBER}"
         USER_PROD = 'admin'
-        SERVER_PROD = 'ec2-18-222-144-236.us-east-2.compute.amazonaws.com'
+        SERVER_PROD = 'ec2-18-118-23-156.us-east-2.compute.amazonaws.com'
     }
     stages {
         stage('Inicializando...') {
