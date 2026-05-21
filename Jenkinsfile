@@ -16,6 +16,8 @@ pipeline {
         stage('Entorno de desarrollo') {
             steps {
                 sh 'docker compose down -v --remove-orphans'
+                sh 'docker rm -f cargas_academicas_db || true'
+                sh 'docker rm -f cargas_academicas_app || true'
                 sh 'docker compose up -d --build'
             }
         }
