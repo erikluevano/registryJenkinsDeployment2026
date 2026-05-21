@@ -76,6 +76,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no -tt ${USER_PROD}@${SERVER_PROD} '
                         cd /home/admin/cargas_academicas &&
+                        docker rm -f cargas_academicas_db cargas_academicas_app 2>/dev/null || true &&
                         if grep -q "^IMAGE_VERSION=" .env; then
                             OLD_VERSION=\$(grep "^IMAGE_VERSION=" .env | cut -d "=" -f2)
                             sed -i "/^IMAGE_VERSION_OLD=/d" .env
